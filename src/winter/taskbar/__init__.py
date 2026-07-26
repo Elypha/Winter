@@ -1,0 +1,1 @@
+"""Windows taskbar integration."""

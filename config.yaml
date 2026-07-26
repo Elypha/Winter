@@ -1,0 +1,128 @@
+version: 1
+telemetry:
+  retention_seconds: 180.0
+  network_sample_seconds: 1.0
+  system_sample_seconds: 1.0
+  sensor_sample_seconds: 2.0
+network:
+  adapter_selection: automatic
+  adapter_name: null
+  chart:
+    series_layout: separate
+    history_seconds: 30.0
+    smoothing_seconds: 2.0
+    minimum_axis_bytes_per_second: 1048576.0
+    scale_down_delay_seconds: 8.0
+    line_width: 1.7
+    line_opacity: 0.8
+    padding_y: 2.0
+    upload_color: [238.0, 83.0, 70.0, 1.0]
+    download_color: [163.0, 61.0, 47.0, 1.0]
+taskbar:
+  monitor: null
+  visible_in_fullscreen: false
+  colors:
+    foreground_on_dark: [25.0, 50.0, 97.0, 0.98]
+    foreground_on_light: [216.0, 18.0, 5.0, 0.98]
+    memory_bar_track_on_dark: [0.0, 0.0, 100.0, 0.15]
+    memory_bar_track_on_light: [0.0, 0.0, 0.0, 0.15]
+    memory_bar_fill_start: [200.0, 65.0, 75.0, 0.67]
+    memory_bar_fill_end: [20.0, 65.0, 75.0, 0.67]
+  text:
+    metric_family: Segoe UI Variable Text
+    metric_size: 13
+    metric_weight: 500.0
+    memory_family: Segoe UI Variable Text
+    memory_size: 12
+    memory_weight: 550.0
+  size:
+    row_height: 18
+    network_width_full: 82
+    network_width_compact: 72
+    network_width_minimal: 72
+    icons_width: 17
+    icon_size: 15
+    usage_width: 72
+    power_width: 29
+    memory_width_full: 72
+    memory_width_compact: 68
+    memory_width_minimal: 62
+    network_unit_width: 10
+    memory_bar_height_trim: 2
+    memory_bar_radius: 4
+  position:
+    shift_left_or_up: 0
+    padding_x: 5
+    row_gap: 2
+    network_value_unit_gap: 4
+    memory_value_padding_left: 5
+    network_icons_gap: 14
+    icons_usage_gap: 12
+    usage_power_gap: 12
+    power_memory_gap: 14
+    icon_shift_down: 2
+    memory_bar_shift_down: 1
+control_center:
+  theme: light
+  history_seconds: 180.0
+  text:
+    family: Segoe UI Variable Text
+    display_family: Segoe UI Variable Display
+    detail_size: 12
+    body_size: 14
+    heading_size: 16
+    title_size: 22
+  dark:
+    window: [216.0, 27.0, 7.0, 1.0]
+    surface: [216.0, 25.0, 10.0, 1.0]
+    surface_raised: [214.0, 24.0, 13.0, 1.0]
+    surface_hovered: [214.0, 23.0, 16.0, 1.0]
+    heading: [214.0, 46.0, 97.0, 1.0]
+    text: [215.0, 35.0, 93.0, 1.0]
+    secondary_text: [214.0, 18.0, 71.0, 1.0]
+    muted_text: [215.0, 16.0, 58.0, 1.0]
+    input: [213.0, 33.0, 9.0, 1.0]
+    alternate_input: [211.0, 32.0, 11.0, 1.0]
+    button: [212.0, 26.0, 17.0, 1.0]
+    button_text: [215.0, 35.0, 93.0, 1.0]
+    accent: [217.0, 91.0, 59.0, 1.0]
+    accent_text: [0.0, 0.0, 100.0, 1.0]
+    placeholder: [214.0, 12.0, 50.0, 1.0]
+    panel: [214.0, 25.0, 10.0, 1.0]
+    panel_border: [215.0, 24.0, 19.0, 1.0]
+    divider: [215.0, 20.0, 18.0, 1.0]
+    chart_grid: [215.0, 18.0, 28.0, 0.55]
+    chart_axis: [214.0, 13.0, 53.0, 1.0]
+    chart_upload: [238.0, 83.0, 70.0, 1.0]
+    chart_download: [163.0, 61.0, 47.0, 1.0]
+    chart_cpu: [36.0, 92.0, 62.0, 1.0]
+    chart_gpu: [278.0, 78.0, 72.0, 1.0]
+    chart_temperature: [8.0, 88.0, 65.0, 1.0]
+    shadow: [220.0, 50.0, 2.0, 0.34]
+  light:
+    window: [216.0, 27.0, 96.0, 1.0]
+    surface: [0.0, 0.0, 100.0, 1.0]
+    surface_raised: [216.0, 30.0, 98.0, 1.0]
+    surface_hovered: [216.0, 25.0, 94.0, 1.0]
+    heading: [220.0, 30.0, 13.0, 1.0]
+    text: [218.0, 24.0, 20.0, 1.0]
+    secondary_text: [215.0, 13.0, 38.0, 1.0]
+    muted_text: [215.0, 10.0, 46.0, 1.0]
+    input: [216.0, 25.0, 98.0, 1.0]
+    alternate_input: [216.0, 24.0, 95.0, 1.0]
+    button: [214.0, 24.0, 92.0, 1.0]
+    button_text: [218.0, 24.0, 20.0, 1.0]
+    accent: [217.0, 82.0, 53.0, 1.0]
+    accent_text: [0.0, 0.0, 100.0, 1.0]
+    placeholder: [215.0, 10.0, 57.0, 1.0]
+    panel: [0.0, 0.0, 100.0, 1.0]
+    panel_border: [214.0, 21.0, 87.0, 1.0]
+    divider: [214.0, 20.0, 89.0, 1.0]
+    chart_grid: [215.0, 18.0, 78.0, 0.6]
+    chart_axis: [215.0, 12.0, 46.0, 1.0]
+    chart_upload: [238.0, 83.0, 70.0, 1.0]
+    chart_download: [163.0, 61.0, 47.0, 1.0]
+    chart_cpu: [34.0, 85.0, 43.0, 1.0]
+    chart_gpu: [274.0, 63.0, 53.0, 1.0]
+    chart_temperature: [8.0, 80.0, 50.0, 1.0]
+    shadow: [220.0, 30.0, 20.0, 0.1]

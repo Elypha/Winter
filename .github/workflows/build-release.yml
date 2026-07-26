@@ -1,0 +1,60 @@
+name: Build Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v9.0.0
+
+      - name: Install Python
+        run: uv python install
+
+      - name: Prepare package information
+        id: info
+        shell: pwsh
+        run: |
+          $packageVersion = uv version --short
+          "archiveName=Winter-${packageVersion}-windows-x64.zip" >> $env:GITHUB_OUTPUT
+
+      - name: Build
+        shell: pwsh
+        run: ./packaging/build.ps1
+
+      - name: Set release archive name
+        shell: pwsh
+        run: |
+          Move-Item `
+            -LiteralPath ./artifacts/Winter-windows-x64.zip `
+            -Destination ./artifacts/${{ steps.info.outputs.archiveName }}
+
+      - name: Generate release notes
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: .github/cliff.toml
+          args: -vv --latest --strip header
+        env:
+          OUTPUT: RELEASE_NOTES.md
+          GITHUB_REPO: ${{ github.repository }}
+
+      - name: Make Release
+        uses: softprops/action-gh-release@v3
+        with:
+          draft: true
+          prerelease: false
+          body_path: RELEASE_NOTES.md
+          files: artifacts/${{ steps.info.outputs.archiveName }}

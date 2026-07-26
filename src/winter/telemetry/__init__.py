@@ -1,0 +1,1 @@
+"""Qt-independent telemetry collection."""
