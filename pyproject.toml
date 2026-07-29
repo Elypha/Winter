@@ -1,6 +1,6 @@
 [project]
 name = "winter"
-version = "0.1.0"
+version = "1.0.0"
 description = "Live network and system telemetry in the Windows taskbar."
 readme = "README.md"
 license = "Apache-2.0"
