@@ -62,16 +62,20 @@ ApplicationWindow {
             return
         if (currentTab === 0)
             refreshHistory()
-        else
+        else {
             view.refreshAvailableSources()
+            view.refreshStartWithWindows()
+        }
     }
     onCurrentTabChanged: {
         if (!visible)
             return
         if (currentTab === 0)
             refreshHistory()
-        else
+        else {
             view.refreshAvailableSources()
+            view.refreshStartWithWindows()
+        }
     }
 
     background: Rectangle { color: root.hsla(root.colors.window) }
@@ -534,6 +538,16 @@ ApplicationWindow {
                                 checked: root.view.visibleInFullscreen
                                 onToggled:
                                     root.view.setVisibleInFullscreen(checked)
+                            }
+
+                            FormToggle {
+                                id: startupChoice
+                                objectName: "startupChoice"
+                                Layout.fillWidth: true
+                                text: "Start Winter when I sign in"
+                                checked: root.view.startsWithWindows
+                                onClicked:
+                                    root.view.setStartWithWindows(checked)
                             }
 
                             Item { Layout.fillHeight: true }

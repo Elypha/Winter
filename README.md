@@ -19,5 +19,6 @@ Download `Winter-<version>-windows-x64.zip` from [Releases](https://github.com/E
 
 - Drag the taskbar readout to reposition it.
 - Right-click it to open the menu.
+- Use the Control Center checkbox to start Winter when you sign in.
 
 Unavailable hardware sensors are shown as `N/A`.

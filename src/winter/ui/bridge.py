@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from pathlib import Path
 from threading import Thread
@@ -7,18 +8,21 @@ from typing import Any
 
 import psutil
 from PySide6.QtCore import (
-    QObject,
     Property,
+    QObject,
     Signal,
     Slot,
 )
 
 from winter.settings import Config, NetworkChartConfig
+from winter.startup import StartupShortcut
 from winter.taskbar.geometry import discover
 from winter.telemetry.history import RecentHistory
 from winter.telemetry.model import Snapshot
 from winter.telemetry.pipeline import SamplingLoop, Telemetry
 from winter.telemetry.system import resolve_default_network_interface
+
+log = logging.getLogger(__name__)
 
 
 class HistoryStore(QObject):
@@ -127,23 +131,28 @@ class _Delivery(QObject):
 class WinterView(QObject):
     telemetryChanged = Signal()
     configurationChanged = Signal()
+    startWithWindowsChanged = Signal()
     availableSourcesChanged = Signal()
     openControlCenterRequested = Signal()
     exitRequested = Signal()
     dragStarted = Signal()
     dragUpdated = Signal()
     dragFinished = Signal()
+    startupErrorRequested = Signal(str)
 
     def __init__(
         self,
         config_path: Path,
         default_config: Config,
         config: Config,
+        startup_shortcut: StartupShortcut,
     ) -> None:
         super().__init__()
         self._config_path = config_path
         self._default_config = default_config
         self._config = config
+        self._startup_shortcut = startup_shortcut
+        self._starts_with_windows = False
         self._automatic_network_adapter = ""
         self._sample = Snapshot.empty()
         self._history = HistoryStore(
@@ -161,6 +170,7 @@ class WinterView(QObject):
             name="Winter telemetry",
             daemon=True,
         )
+        self.refreshStartWithWindows()
 
     def start(self) -> None:
         self._thread.start()
@@ -291,6 +301,10 @@ class WinterView(QObject):
     def visibleInFullscreen(self) -> bool:
         return self._config.taskbar.visible_in_fullscreen
 
+    @Property(bool, notify=startWithWindowsChanged)
+    def startsWithWindows(self) -> bool:
+        return self._starts_with_windows
+
     @Property("QStringList", notify=availableSourcesChanged)
     def networkInterfaces(self) -> list[str]:
         return sorted(psutil.net_if_stats(), key=str.casefold)
@@ -307,6 +321,29 @@ class WinterView(QObject):
     def refreshAvailableSources(self) -> None:
         self._automatic_network_adapter = resolve_default_network_interface() or ""
         self.availableSourcesChanged.emit()
+
+    @Slot()
+    def refreshStartWithWindows(self) -> None:
+        try:
+            self._starts_with_windows = self._startup_shortcut.is_enabled()
+        except Exception:
+            self._starts_with_windows = False
+            log.warning("Could not read the Windows startup shortcut", exc_info=True)
+        self.startWithWindowsChanged.emit()
+
+    @Slot(bool)
+    def setStartWithWindows(self, enabled: bool) -> None:
+        try:
+            if enabled:
+                self._startup_shortcut.enable()
+            else:
+                self._startup_shortcut.disable()
+        except Exception as error:
+            log.exception("Could not update the Windows startup shortcut")
+            self.startupErrorRequested.emit(
+                f"Winter could not update its startup shortcut.\n\n{error}"
+            )
+        self.refreshStartWithWindows()
 
     @Slot(str, str)
     def setNetworkAdapter(self, adapter_selection: str, adapter_name: str) -> None:

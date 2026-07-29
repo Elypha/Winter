@@ -13,6 +13,7 @@ from winter.logging_setup import configure_logging
 from winter.paths import AppFiles
 from winter.settings import Config
 from winter.single_instance import SessionLock
+from winter.startup import StartupShortcut
 from winter.taskbar.host import TaskbarHost
 from winter.ui.bridge import WinterView
 
@@ -43,7 +44,12 @@ def _launch(files: AppFiles) -> int:
     app.setWindowIcon(QIcon(str(files.icon)))
     app.setQuitOnLastWindowClosed(False)
 
-    view = WinterView(files.user_configuration, default_config, config)
+    view = WinterView(
+        files.user_configuration,
+        default_config,
+        config,
+        StartupShortcut.for_current_process(files),
+    )
     engine = QQmlApplicationEngine()
     engine.setInitialProperties({"view": view})
     engine.load(QUrl.fromLocalFile(str(files.qml_directory / "Taskbar.qml")))
@@ -64,7 +70,16 @@ def _launch(files: AppFiles) -> int:
         control_center.raise_()
         control_center.requestActivate()
 
+    def report_runtime_error(message: str) -> None:
+        ctypes.windll.user32.MessageBoxW(
+            int(control_center.winId()),
+            message,
+            "Winter",
+            0x10,
+        )
+
     view.openControlCenterRequested.connect(open_control_center)
+    view.startupErrorRequested.connect(report_runtime_error)
     view.exitRequested.connect(app.quit)
     app.aboutToQuit.connect(host.close)
     app.aboutToQuit.connect(view.close)
