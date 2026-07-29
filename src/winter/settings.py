@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import tempfile
-from typing import Annotated, Literal, Self
+from pathlib import Path
+from typing import Annotated, Any, Literal, Self
 
+import yaml
 from pydantic import (
     BaseModel,
     BeforeValidator,
@@ -12,10 +13,8 @@ from pydantic import (
     Field,
     StringConstraints,
     ValidationError,
+    model_validator,
 )
-from pydantic import model_validator
-import yaml
-
 
 HueDegrees = Annotated[float, Field(ge=0, lt=360)]
 Percentage = Annotated[float, Field(ge=0, le=100)]
@@ -57,6 +56,36 @@ def _represent_hsla(
 
 
 _ConfigDumper.add_representer(tuple, _represent_hsla)
+
+
+def _merge_mappings(
+    base: dict[str, Any],
+    override: dict[str, Any],
+) -> dict[str, Any]:
+    merged = base.copy()
+    for key, value in override.items():
+        current = merged.get(key)
+        if isinstance(current, dict) and isinstance(value, dict):
+            merged[key] = _merge_mappings(current, value)
+        else:
+            merged[key] = value
+    return merged
+
+
+def _mapping_difference(
+    default: dict[str, Any],
+    current: dict[str, Any],
+) -> dict[str, Any]:
+    difference: dict[str, Any] = {}
+    for key, value in current.items():
+        default_value = default.get(key)
+        if isinstance(default_value, dict) and isinstance(value, dict):
+            nested = _mapping_difference(default_value, value)
+            if nested:
+                difference[key] = nested
+        elif value != default_value:
+            difference[key] = value
+    return difference
 
 
 class TelemetryConfig(_ConfigSection):
@@ -259,9 +288,45 @@ class Config(_ConfigSection):
         except (yaml.YAMLError, ValidationError) as error:
             raise OSError(f"Invalid configuration in {path}: {error}") from error
 
-    def save(self, path: Path) -> None:
-        payload = yaml.dump(
+    @classmethod
+    def load_overrides(cls, default: Self, path: Path) -> Self:
+        if not path.exists():
+            return default
+
+        try:
+            document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except OSError as error:
+            raise OSError(f"Could not read {path}: {error}") from error
+        except yaml.YAMLError as error:
+            raise OSError(f"Invalid configuration in {path}: {error}") from error
+
+        if not isinstance(document, dict):
+            raise OSError(f"Invalid configuration in {path}: expected a mapping")
+        version = document.get("version")
+        if type(version) is not int or version != default.version:
+            raise OSError(
+                f"Unsupported configuration version in {path}: "
+                f"expected {default.version}, got {version!r}"
+            )
+
+        merged = _merge_mappings(
+            default.model_dump(mode="python"),
+            document,
+        )
+        try:
+            return cls.model_validate(merged)
+        except ValidationError as error:
+            raise OSError(f"Invalid configuration in {path}: {error}") from error
+
+    def save_overrides(self, default: Self, path: Path) -> None:
+        difference = _mapping_difference(
+            default.model_dump(mode="python"),
             self.model_dump(mode="python"),
+        )
+        difference.pop("version", None)
+        document = {"version": self.version, **difference}
+        payload = yaml.dump(
+            document,
             Dumper=_ConfigDumper,
             allow_unicode=True,
             sort_keys=False,

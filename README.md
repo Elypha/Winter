@@ -10,7 +10,10 @@ It also comes with a Control Center for people who really want to have one.
 
 ## Install
 
-Download `Winter-<version>-windows-x64.zip` from [Releases](https://github.com/Elypha/Winter/releases), extract it to a writable folder, and run `Winter.exe`. Settings and logs stay in that folder.
+Download `Winter-<version>-windows-x64.zip` from [Releases](https://github.com/Elypha/Winter/releases), extract it to a writable folder, and run `Winter.exe`.
+
+- User settings are stored in `config/config.yaml`
+- Logs are in `logs/`
 
 ## Use
 

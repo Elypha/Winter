@@ -33,7 +33,8 @@ def _launch(files: AppFiles) -> int:
         )
         return 1
 
-    config = Config.load(files.configuration)
+    default_config = Config.load(files.default_configuration)
+    config = Config.load_overrides(default_config, files.user_configuration)
     log.info("Winter starting")
 
     app = QGuiApplication(sys.argv)
@@ -42,7 +43,7 @@ def _launch(files: AppFiles) -> int:
     app.setWindowIcon(QIcon(str(files.icon)))
     app.setQuitOnLastWindowClosed(False)
 
-    view = WinterView(files.configuration, config)
+    view = WinterView(files.user_configuration, default_config, config)
     engine = QQmlApplicationEngine()
     engine.setInitialProperties({"view": view})
     engine.load(QUrl.fromLocalFile(str(files.qml_directory / "Taskbar.qml")))

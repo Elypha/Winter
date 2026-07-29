@@ -137,10 +137,12 @@ class WinterView(QObject):
     def __init__(
         self,
         config_path: Path,
+        default_config: Config,
         config: Config,
     ) -> None:
         super().__init__()
         self._config_path = config_path
+        self._default_config = default_config
         self._config = config
         self._automatic_network_adapter = ""
         self._sample = Snapshot.empty()
@@ -370,7 +372,7 @@ class WinterView(QObject):
         updated = Config.model_validate(document)
         if updated == self._config:
             return
-        updated.save(self._config_path)
+        updated.save_overrides(self._default_config, self._config_path)
         self._config = updated
         self._telemetry.update_config(updated)
         self.configurationChanged.emit()

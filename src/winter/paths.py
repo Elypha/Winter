@@ -18,8 +18,12 @@ class AppFiles:
         return cls(root=root)
 
     @property
-    def configuration(self) -> Path:
-        return self.root / "config.yaml"
+    def default_configuration(self) -> Path:
+        return self.root / "config.default.yaml"
+
+    @property
+    def user_configuration(self) -> Path:
+        return self.root / "config" / "config.yaml"
 
     @property
     def log_directory(self) -> Path:

@@ -9,8 +9,8 @@ try {
     }
 
     Copy-Item `
-        -LiteralPath (Join-Path $project 'config.yaml') `
-        -Destination (Join-Path $project 'dist\Winter\config.yaml') `
+        -LiteralPath (Join-Path $project 'config.default.yaml') `
+        -Destination (Join-Path $project 'dist\Winter\config.default.yaml') `
         -Force
 
     $artifactDirectory = Join-Path $project 'artifacts'
