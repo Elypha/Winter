@@ -164,7 +164,7 @@ class TaskbarHost(QObject):
             placement.y,
             placement.width,
             placement.height,
-            win32con.SWP_NOACTIVATE,
+            win32con.SWP_NOACTIVATE | win32con.SWP_NOOWNERZORDER,
         )
         self._update_visibility()
 
@@ -313,7 +313,10 @@ class TaskbarHost(QObject):
                 0,
                 0,
                 0,
-                win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_NOACTIVATE,
+                win32con.SWP_NOMOVE
+                | win32con.SWP_NOSIZE
+                | win32con.SWP_NOACTIVATE
+                | win32con.SWP_NOOWNERZORDER,
             )
         else:
             self._set_visible(False)
@@ -385,7 +388,9 @@ class TaskbarHost(QObject):
             y,
             0,
             0,
-            win32con.SWP_NOSIZE | win32con.SWP_NOACTIVATE,
+            win32con.SWP_NOSIZE
+            | win32con.SWP_NOACTIVATE
+            | win32con.SWP_NOOWNERZORDER,
         )
         self._placement = _Placement(
             taskbar=placement.taskbar,
