@@ -24,23 +24,9 @@ jobs:
       - name: Install Python
         run: uv python install
 
-      - name: Prepare package information
-        id: info
-        shell: pwsh
-        run: |
-          $packageVersion = uv version --short
-          "archiveName=Winter-${packageVersion}-windows-x64.zip" >> $env:GITHUB_OUTPUT
-
       - name: Build
         shell: pwsh
         run: ./packaging/build.ps1
-
-      - name: Set release archive name
-        shell: pwsh
-        run: |
-          Move-Item `
-            -LiteralPath ./artifacts/Winter-windows-x64.zip `
-            -Destination ./artifacts/${{ steps.info.outputs.archiveName }}
 
       - name: Generate release notes
         uses: orhun/git-cliff-action@v4
@@ -57,4 +43,4 @@ jobs:
           draft: true
           prerelease: false
           body_path: RELEASE_NOTES.md
-          files: artifacts/${{ steps.info.outputs.archiveName }}
+          files: artifacts/Winter-windows-x64.zip
